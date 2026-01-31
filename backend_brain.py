@@ -19,8 +19,8 @@ app.add_middleware(
 )
 
 # --- CONFIGURATION ---
-FRIEND_LAPTOP_URL = "http://localhost:5000/detections"
-#FRIEND_LAPTOP_URL = "https://mugwumpian-scottie-homely.ngrok-free.dev/get_coords"
+# FRIEND_LAPTOP_URL = "http://localhost:5000/detections"
+FRIEND_LAPTOP_URL = "https://mugwumpian-scottie-homely.ngrok-free.dev/get_coords"
 MATRIX_FILE = "matrix.npy"
 SLOTS_CONFIG_FILE = "./config.json"
 # ---------------------
@@ -56,47 +56,55 @@ def processing_loop():
             # Expected format: [{"x": 200, "y": 450, "type": "car"}, ...]
             response = requests.get(FRIEND_LAPTOP_URL, timeout=1)
             raw_detections = response.json()
-            
-            # Temporary list to track occupied slots for this frame
-            # 0 = Empty, 1 = Occupied (Simplified for MVP)
-            # You can change '1' to 'C' or 'B' later
 
-            print(f"DEBUG RAW DATA: {raw_detections}") 
-            print(f"DEBUG TYPE: {type(raw_detections)}")
+            # --- VISUALIZATION SETUP (New) ---
+            # Load the map image to draw on
+            debug_map = cv2.imread("st_thomas_top_down.png") # Make sure path is correct!
+            # ---------------------------------
 
             slot_status = ['0'] * len(master_config['slots'])
 
-            # 2. Loop through every detected car
             for det in raw_detections:
-                # IMPORTANT: Use the bottom-center of the bounding box!
-                # If friend sends x,y (center), adjust if needed.
-                # Assuming friend sends the "footprint" x,y.
-                
+                # Defensive check
+                if 'x' not in det: continue
+
                 # Transform Logic
                 point_vector = np.array([[[det['x'], det['y']]]], dtype=np.float32)
                 transformed = cv2.perspectiveTransform(point_vector, h_matrix)
                 
-                map_x = transformed[0][0][0]
-                map_y = transformed[0][0][1]
+                map_x = int(transformed[0][0][0])
+                map_y = int(transformed[0][0][1])
+
+                # --- DRAW THE CAR (New) ---
+                # Draw a Red Dot where the backend thinks the car is
+                cv2.circle(debug_map, (map_x, map_y), 5, (0, 0, 255), -1) 
+                # --------------------------
 
                 # 3. Check which slot this point falls into
                 for index, slot in enumerate(master_config['slots']):
-                    coords = slot['coordinates'] 
-                    slot_x = coords['x']
-                    slot_y = coords['y']
-                    slot_w = coords['w']
-                    slot_h = coords['h']
+                    coords = slot['coordinates']
+                    
+                    # Draw the Slot Box (Green) for reference
+                    cv2.rectangle(debug_map, 
+                                  (coords['x'], coords['y']), 
+                                  (coords['x']+coords['w'], coords['y']+coords['h']), 
+                                  (0, 255, 0), 1)
 
-                    if point_in_rect(map_x, map_y, slot_x, slot_y, slot_w, slot_h):
-                        # We found a match!
-                        # Mark this slot index as Occupied
-                        slot_status[index] = '1' 
-                        break # Stop checking other slots for this specific car
+                    if point_in_rect(map_x, map_y, coords['x'], coords['y'], coords['w'], coords['h']):
+                        slot_status[index] = '1'
+                        # If hit, draw the dot Green to show success
+                        cv2.circle(debug_map, (map_x, map_y), 5, (0, 255, 0), -1)
+                        break 
 
-            # 4. Update the Global String
+            # 4. Update String
             current_status_string = "".join(slot_status)
             print(f"Updated State: {current_status_string}")
 
+            # --- SHOW THE DEBUG WINDOW (New) ---
+            # Resize if huge
+            debug_map = cv2.resize(debug_map, (800, 600)) 
+            cv2.imshow("Backend Brain - God Mode", debug_map)
+            cv2.waitKey(1) # Required to update the window
         except Exception as e:
             print(f"Error fetching from Vision Edge: {e}")
         
