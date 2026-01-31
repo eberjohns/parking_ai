@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeoPark Navigation Demo</title>
+    <title>Demo Page</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
@@ -28,10 +28,10 @@
         /* 3D car marker style */
         .custom-car-marker {
             width: 44px; height: 70px;
-            background: linear-gradient(180deg, #4285f4 60%, #222 100%);
-            border-radius: 14px 14px 18px 18px/18px 18px 30px 30px;
-            box-shadow: 0 10px 24px 0 rgba(0,0,0,0.7);
-            border: 3px solid #fff;
+            /* background: linear-gradient(180deg, #4285f4 60%, #222 100%); */
+            /* border-radius: 14px 14px 18px 18px/18px 18px 30px 30px; */
+            /* box-shadow: 0 10px 24px 0 rgba(0,0,0,0.7); */
+            /* border: 3px solid #fff; */
             position: relative;
             display: flex; align-items: center; justify-content: center;
         }
@@ -213,11 +213,13 @@
         className: '',
         iconSize: [44, 70],
         iconAnchor: [22, 35],
-            // html: `<div class="custom-car-marker" style="width:44px;height:70px;display:flex;align-items:center;justify-content:center;">
-            //     <img src="./car.png" alt="Car" style="width:38px;height:60px;object-fit:contain;display:block;" />
-            // </div>`
             html: `<div class="custom-car-marker" style="width:44px;height:70px;display:flex;align-items:center;justify-content:center;">
+                <svg width="38" height="60" viewBox="0 0 38 60" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                    <polygon points="19,8 32,52 19,44 6,52" fill="#4285f4" stroke="#222" stroke-width="2" />
+                </svg>
             </div>`
+            // html: `<div class="custom-car-marker" style="width:44px;height:70px;display:flex;align-items:center;justify-content:center;">
+            // </div>`
     });
     carMarker = L.marker([CAR_START.lat, CAR_START.lng], {
         icon: CarDivIcon,
