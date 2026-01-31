@@ -1,42 +1,74 @@
 import cv2
 import numpy as np
 
-# List to store our 4 points
-points = []
+# --- CONFIGURATION ---
+SOURCE_IMAGE_PATH = 'camera_view.png'
+OUTPUT_IMAGE_PATH = 'true_top_down.png'
+# ---------------------
 
-def click_event(event, x, y, flags, params):
+src_points = []
+
+def select_points(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
-        points.append([x, y])
-        # Draw a circle where you clicked
-        cv2.circle(img, (x, y), 5, (0, 255, 0), -1)
-        cv2.imshow('Original CCTV', img)
-        
-        if len(points) == 4:
-            transform_image()
+        src_points.append((x, y))
+        cv2.circle(param['img'], (x, y), 5, (0, 255, 0), -1)
+        cv2.putText(param['img'], str(len(src_points)), (x + 10, y), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+        cv2.imshow("Select 4 Corners", param['img'])
 
-def transform_image():
-    # 1. Prepare the source points from your clicks
-    pts1 = np.float32(points)
+def main():
+    img = cv2.imread(SOURCE_IMAGE_PATH)
+    if img is None: return
+    h, w = img.shape[:2]
+    clone = img.copy()
+
+    cv2.namedWindow("Select 4 Corners")
+    cv2.setMouseCallback("Select 4 Corners", select_points, {'img': clone})
+
+    print("Click 4 corners of a real-world rectangle (e.g., a parking spot).")
+    while len(src_points) < 4:
+        cv2.imshow("Select 4 Corners", clone)
+        cv2.waitKey(1)
+
+    # 1. Source Points
+    pts_src = np.float32(src_points)
+
+    # 2. Calculate the "Natural" dimensions of the selection
+    # We find the width and height of the box to maintain aspect ratio
+    (tl, tr, br, bl) = pts_src
+    width_a = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+    width_b = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+    max_w = max(int(width_a), int(width_b))
+
+    height_a = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+    height_b = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+    max_h = max(int(height_a), int(height_b))
+
+    # 3. Destination Points
+    # We place the result in the center of the original resolution 
+    # to avoid the image flying off-screen.
+    offset_x = (w - max_w) // 2
+    offset_y = (h - max_h) // 2
     
-    # 2. Define the destination (the "Perfect Rectangle")
-    # We'll make it 500x800, but you can change this ratio
-    width, height = 500, 800
-    pts2 = np.float32([[0, 0], [width, 0], [width, height], [0, height]])
+    pts_dst = np.float32([
+        [offset_x, offset_y],
+        [offset_x + max_w, offset_y],
+        [offset_x + max_w, offset_y + max_h],
+        [offset_x, offset_y + max_h]
+    ])
+
+    # 4. Generate Matrix and Warp
+    matrix = cv2.getPerspectiveTransform(pts_src, pts_dst)
     
-    # 3. Calculate the Matrix and Warp
-    matrix = cv2.getPerspectiveTransform(pts1, pts2)
-    result = cv2.warpPerspective(original_img, matrix, (width, height))
-    
-    cv2.imshow('Top Down View', result)
-    print("Transformation Complete!")
+    # We keep the output resolution exactly the same as the input (w, h)
+    result = cv2.warpPerspective(img, matrix, (w, h), flags=cv2.INTER_LINEAR)
 
-# Load your image here
-img = cv2.imread('camera_view.png')
-original_img = img.copy()
+    # 5. Save and Show
+    cv2.imwrite(OUTPUT_IMAGE_PATH, result)
+    print(f"Transformed image saved to {OUTPUT_IMAGE_PATH}")
+    cv2.imshow("Top-Down (Original Resolution)", result)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-cv2.imshow('Original CCTV', img)
-cv2.setMouseCallback('Original CCTV', click_event)
-
-print("Click the 4 corners of a rectangular area in order: Top-Left, Top-Right, Bottom-Right, Bottom-Left.")
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+if __name__ == "__main__":
+    main()
