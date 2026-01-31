@@ -4,138 +4,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GeoPark Navigation Demo</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
-        /* --- 1. THE "GOOGLE MAPS NIGHT MODE" THEME --- */
         body { margin: 0; overflow: hidden; background: #111; font-family: 'Segoe UI', sans-serif; }
-        
-        /* The Viewport: Tilted 3D effect */
-        #app-container {
-            width: 100vw; height: 100vh;
-            perspective: 1200px; /* This creates the 3D depth */
-            background: #202124;
-            overflow: hidden;
+        #app-container { width: 100vw; height: 100vh; background: #202124; overflow: hidden; position: relative; }
+        /* 3D tilt effect for the map */
+        #map {
+            position: absolute;
+            top: -10vh; left: -10vw;
+            width: 120vw; height: 120vh; z-index: 1;
+            transform: perspective(1200px) rotateX(30deg) scale(1.08);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+            border-radius: 0;
+            transition: transform 0.3s;
+        }
+        /* 3D car marker shadow effect */
+        .leaflet-marker-icon.car-3d {
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.7));
+        }
+        .hud { position: absolute; z-index: 3000; pointer-events: auto; }
+        #top-bar { top: 48px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; color: white; display: flex; align-items: center; gap: 15px; }
+        /* 3D car marker style */
+        .custom-car-marker {
+            width: 44px; height: 70px;
+            background: linear-gradient(180deg, #4285f4 60%, #222 100%);
+            border-radius: 14px 14px 18px 18px/18px 18px 30px 30px;
+            box-shadow: 0 10px 24px 0 rgba(0,0,0,0.7);
+            border: 3px solid #fff;
             position: relative;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        /* The Map Plane */
-        #world-map {
-            width: 3000px; height: 3000px;
-            background-color: #242f3e;
-            /* Placeholder Grid Pattern (looks like city blocks) */
-            background-image: 
-                linear-gradient(#333 2px, transparent 2px),
-                linear-gradient(90deg, #333 2px, transparent 2px);
-            background-size: 100px 100px;
-            
+        .custom-car-marker::before {
+            content: '';
             position: absolute;
-            top: -1000px; left: -1000px;
-            transform-style: preserve-3d;
-            transform: rotateX(40deg) rotateZ(0deg); /* Initial Camera Angle */
-            transition: transform 0.1s ease-out;
+            top: 8px; left: 50%;
+            width: 18px; height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            opacity: 0.18;
+            filter: blur(2px);
         }
-
-        /* The Player Car */
-        #player-car {
-            width: 40px; height: 70px;
+        .custom-car-marker::after {
+            content: '';
             position: absolute;
-            background: #4285f4; /* Google Blue */
-            border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            transition: top 0.1s linear, left 0.1s linear, transform 0.1s linear;
+            bottom: 0; left: 50%;
+            width: 24px; height: 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.2) 100%);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            filter: blur(2px);
         }
-        /* Headlights */
-        #player-car::after {
-            content: ''; position: absolute; top: -10px; left: 5px; 
-            width: 30px; height: 60px; 
-            background: linear-gradient(to top, rgba(255,255,255,0), rgba(255,255,255,0.3));
-            filter: blur(5px);
+        .custom-car-headlight {
+            position: absolute;
+            top: 0; left: 50%;
+            width: 10px; height: 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            opacity: 0.7;
+            filter: blur(2px);
         }
-
-        /* Parking Lot Markers */
-        .poi-marker {
-            position: absolute; width: 60px; height: 60px;
-            background: #ea4335; border-radius: 50% 50% 5px 50%;
-            transform: rotate(-45deg);
-            border: 3px solid white;
-            box-shadow: 2px 5px 10px rgba(0,0,0,0.5);
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; color: white; z-index: 5;
-            transition: transform 0.2s;
-        }
-        .poi-marker::after { content: 'P'; transform: rotate(45deg); font-size: 24px; }
-        .poi-marker:hover { transform: scale(1.1) rotate(-45deg); background: #ff5e50; }
-
-        /* --- 2. UI OVERLAY --- */
-        .hud { position: absolute; z-index: 100; pointer-events: none; }
-        
-        #top-bar { top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; color: white; display: flex; align-items: center; gap: 15px; }
-        
         #controls { bottom: 30px; right: 30px; pointer-events: auto; display: flex; gap: 10px; }
-        
         .btn { background: #4285f4; color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .btn:active { transform: scale(0.95); }
         .btn-green { background: #0f9d58; }
-
-        /* --- 3. THE SIDEBAR (Real Integration) --- */
         #sidebar {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 50vh;
-            background: white; border-radius: 20px 20px 0 0;
-            transform: translateY(110%); /* Hidden by default */
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            border-radius: 20px 0 0 20px;
+            transform: translateX(110%);
             transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            z-index: 200; box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column;
+            z-index: 4000;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
         }
-        #sidebar.active { transform: translateY(0); }
-
+        #sidebar.active {
+            transform: translateX(0);
+        }
         .sidebar-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: start; }
         .sidebar-title h2 { margin: 0; font-size: 24px; color: #333; }
         .sidebar-title p { margin: 5px 0 0; color: #666; }
         .close-btn { background: #f1f3f4; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; }
-
-        /* The Live Map Container inside Sidebar */
         #live-grid-container {
-            flex: 1; position: relative; background: #f8f9fa; margin: 20px;
-            border-radius: 12px; overflow: hidden; border: 2px solid #ddd;
+            flex: 1;
+            position: relative;
+            background: #f8f9fa;
+            margin: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        #live-map-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
-        
-        /* The Red/Green Boxes (Reused from previous code) */
-        .live-slot {
-            position: absolute;
-            background: rgba(46, 204, 113, 0.6); /* Green */
-            border: 1px solid white;
-            transition: background 0.3s;
+        #live-map-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0.6;
+            display: block;
         }
-        .live-slot.occupied { background: rgba(231, 76, 60, 0.8) !important; } /* Red */
+        .live-slot { position: absolute; background: rgba(46, 204, 113, 0.6); border: 1px solid white; transition: background 0.3s; }
+        .live-slot.occupied { background: rgba(231, 76, 60, 0.8) !important; }
     </style>
 </head>
 <body>
 
-<div id="app-container">
-    <div id="world-map">
-        <div id="player-car"></div>
-        
-        <div class="poi-marker" id="lot-st-thomas" style="left: 1500px; top: 1200px;" onclick="openSidebar('lot_st_thomas')"></div>
-        
-        <div class="poi-marker" style="left: 800px; top: 900px; background: #555; cursor: default;"></div>
-        <div class="poi-marker" style="left: 2000px; top: 1800px; background: #555; cursor: default;"></div>
-    </div>
 
+<div id="app-container">
+    <div id="map"></div>
     <div class="hud" id="top-bar">
-        <span style="font-size: 20px;">🅿️</span>
+        <span style="font-size: 24px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #fff; color: #4285f4; border-radius: 8px; font-weight: bold; box-shadow: 0 2px 8px rgba(66,133,244,0.15);">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="22" height="22" rx="6" fill="#fff"/>
+                <text x="11" y="16" text-anchor="middle" font-size="14" font-family="Segoe UI, Arial, sans-serif" fill="#4285f4" font-weight="bold">P</text>
+            </svg>
+        </span>
         <div>
             <div style="font-size: 12px; opacity: 0.8;">NEAREST PARKING</div>
             <div id="distance-display" style="font-weight: bold;">Searching...</div>
         </div>
     </div>
-
     <div class="hud" id="controls">
-        <button class="btn" onclick="startAutoDrive()">🎬 Auto-Drive Demo</button>
-        <button class="btn btn-green" onclick="findParking()">🔍 Find Spot</button>
+        <button class="btn" onclick="startAutoDrive()">Auto-Drive Demo</button>
+        <button class="btn btn-green" onclick="findParking()">Find Spot</button>
     </div>
-
     <div id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-title">
@@ -144,7 +144,10 @@
             </div>
             <button class="close-btn" onclick="closeSidebar()">×</button>
         </div>
-        
+        <div class="sidebar-details" style="padding: 0 20px 20px 20px; color: #444; font-size: 15px;">
+            <b>Details:</b>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque. Proin ac neque nec nisi blandit commodo.</p>
+        </div>
         <div id="live-grid-container">
             <img id="live-map-img" src="st_thomas_top_down.png" alt="Live View">
             <div id="live-slots-layer"></div>
@@ -152,119 +155,152 @@
     </div>
 </div>
 
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
     // --- 1. CONFIGURATION ---
     const API_BASE_URL = "http://localhost:8000"; // Your Backend
-    const LOT_LOCATION = { x: 1500, y: 1200 }; // Where the red marker is on the big map
-    
-    // Game State
-    let car = { x: 1400, y: 1400, angle: 0, speed: 0 };
-    let keys = {};
+    // Example: St. Thomas College, Thrissur, Kerala, India
+    const LOT_LOCATION = { lat: 10.5222, lng: 76.2177 };
+    const CAR_START = { lat: 10.5215, lng: 76.2165 };
+    let carMarker = null;
     let isAutoDriving = false;
+    let carLatLng = { ...CAR_START };
 
-    // --- 2. GAME LOOP (Movement) ---
-    function gameLoop() {
-        if (!isAutoDriving) {
-            // Manual Controls
-            if (keys['ArrowUp']) car.y -= 5;
-            if (keys['ArrowDown']) car.y += 5;
-            if (keys['ArrowLeft']) car.x -= 5;
-            if (keys['ArrowRight']) car.x += 5;
-            
-            // Simple Rotation Logic
-            if (keys['ArrowUp']) car.angle = 0;
-            if (keys['ArrowDown']) car.angle = 180;
-            if (keys['ArrowLeft']) car.angle = -90;
-            if (keys['ArrowRight']) car.angle = 90;
-        }
+    // --- 2. INIT LEAFLET MAP ---
+    const map = L.map('map').setView([CAR_START.lat, CAR_START.lng], 18);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        // Update DOM
-        const carEl = document.getElementById('player-car');
-        const mapEl = document.getElementById('world-map');
-        
-        carEl.style.left = car.x + 'px';
-        carEl.style.top = car.y + 'px';
-        carEl.style.transform = `translate(-50%, -50%) rotate(${car.angle}deg)`;
+    // --- 3. ADD PARKING MARKER ---
+    // Custom Parking SVG Icon
+    const ParkingDivIcon = L.divIcon({
+        className: '',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        html: `
+            <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="16" cy="16" r="15" fill="#fff" stroke="#4285f4" stroke-width="2"/>
+                    <text x="16" y="22" text-anchor="middle" font-size="18" font-family="Segoe UI, Arial, sans-serif" fill="#4285f4" font-weight="bold">P</text>
+                </svg>
+            </div>
+        `
+    });
+    const parkingMarker = L.marker([LOT_LOCATION.lat, LOT_LOCATION.lng], {
+        icon: ParkingDivIcon,
+        title: 'St. Thomas College'
+    })
+        .addTo(map)
+        .bindPopup('<b>St. Thomas College</b><br>Parking Lot')
+        .on('click', () => openSidebar('lot_st_thomas'));
 
-        // Camera Follow Logic (Move the map opposite to the car)
-        // We center the car on screen
-        const screenW = window.innerWidth;
-        const screenH = window.innerHeight;
-        const mapX = (screenW / 2) - car.x;
-        const mapY = (screenH / 2) - car.y + 200; // +200 to tilt view nicely
+    // --- 4. ADD CAR MARKER ---
+    // Custom HTML marker for 3D car effect
+    let carAngle = 0;
+    const CarDivIcon = L.divIcon({
+        className: '',
+        iconSize: [44, 70],
+        iconAnchor: [22, 35],
+        html: `<div class=\"custom-car-marker\"><div class=\"custom-car-headlight\"></div></div>`
+    });
+    carMarker = L.marker([CAR_START.lat, CAR_START.lng], {
+        icon: CarDivIcon,
+        title: 'Your Car',
+        draggable: false
+    }).addTo(map);
 
-        mapEl.style.transform = `rotateX(40deg) translate(${mapX}px, ${mapY}px)`;
-
-        // Calculate Distance to Lot
-        const dist = Math.sqrt(Math.pow(car.x - LOT_LOCATION.x, 2) + Math.pow(car.y - LOT_LOCATION.y, 2));
-        document.getElementById('distance-display').innerText = Math.round(dist / 10) + "m away";
-
-        requestAnimationFrame(gameLoop);
+    // --- 5. DISTANCE DISPLAY ---
+    function updateDistanceDisplay() {
+        const dist = map.distance([carLatLng.lat, carLatLng.lng], [LOT_LOCATION.lat, LOT_LOCATION.lng]);
+        document.getElementById('distance-display').innerText = Math.round(dist) + 'm away';
     }
+    updateDistanceDisplay();
 
-    // Input Handling
-    window.addEventListener('keydown', e => keys[e.code] = true);
-    window.addEventListener('keyup', e => keys[e.code] = false);
-    
-    // Start Game Loop
-    requestAnimationFrame(gameLoop);
+    // --- 6. CAR MOVEMENT (ARROW KEYS) ---
+    let keys = {};
+    function moveCar() {
+        let moved = false;
+        let dLat = 0, dLng = 0;
+        const step = 0.000025; // ~2.5m per keypress, slower
+        if (keys['ArrowUp'])    { dLat += step; moved = true; carAngle = 0; }
+        if (keys['ArrowDown'])  { dLat -= step; moved = true; carAngle = 180; }
+        if (keys['ArrowLeft'])  { dLng -= step; moved = true; carAngle = 270; }
+        if (keys['ArrowRight']) { dLng += step; moved = true; carAngle = 90; }
+        // Diagonal movement angle
+        if (keys['ArrowUp'] && keys['ArrowLeft']) carAngle = 315;
+        if (keys['ArrowUp'] && keys['ArrowRight']) carAngle = 45;
+        if (keys['ArrowDown'] && keys['ArrowLeft']) carAngle = 225;
+        if (keys['ArrowDown'] && keys['ArrowRight']) carAngle = 135;
+        if (moved) {
+            carLatLng.lat += dLat;
+            carLatLng.lng += dLng;
+            carMarker.setLatLng([carLatLng.lat, carLatLng.lng]);
+            // Rotate only the inner car div, not the marker container
+            const carEl = carMarker.getElement();
+            if (carEl) {
+                const carBody = carEl.querySelector('.custom-car-marker');
+                if (carBody) carBody.style.transform = `rotate(${carAngle}deg)`;
+            }
+            map.panTo([carLatLng.lat, carLatLng.lng]);
+            updateDistanceDisplay();
+        }
+        requestAnimationFrame(moveCar);
+    }
+    window.addEventListener('keydown', e => { keys[e.code] = true; });
+    window.addEventListener('keyup', e => { keys[e.code] = false; });
+    requestAnimationFrame(moveCar);
 
-
-    // --- 3. AUTO DRIVE FEATURE (Movie Mode) ---
+    // --- 7. AUTO DRIVE FEATURE ---
     function startAutoDrive() {
         isAutoDriving = true;
-        const targetX = LOT_LOCATION.x;
-        const targetY = LOT_LOCATION.y + 100; // Stop slightly below it
-
-        const driveInterval = setInterval(() => {
-            const dx = targetX - car.x;
-            const dy = targetY - car.y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-
+        const target = [LOT_LOCATION.lat, LOT_LOCATION.lng];
+        const interval = setInterval(() => {
+            const dist = map.distance([carLatLng.lat, carLatLng.lng], target);
             if (dist < 10) {
-                clearInterval(driveInterval);
+                clearInterval(interval);
                 isAutoDriving = false;
-                openSidebar('lot_st_thomas'); // Auto-open when arrived
+                openSidebar('lot_st_thomas');
                 return;
             }
-
-            // Move towards target
-            car.x += (dx / dist) * 4; // Speed 4
-            car.y += (dy / dist) * 4;
-
+            // Move car towards target
+            const dLat = (target[0] - carLatLng.lat) * 0.08;
+            const dLng = (target[1] - carLatLng.lng) * 0.08;
+            carLatLng.lat += dLat;
+            carLatLng.lng += dLng;
             // Calculate angle
-            car.angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-
+            carAngle = Math.atan2(dLng, dLat) * 180 / Math.PI;
+            carMarker.setLatLng([carLatLng.lat, carLatLng.lng]);
+            const carEl = carMarker.getElement();
+            if (carEl) {
+                const carBody = carEl.querySelector('.custom-car-marker');
+                if (carBody) carBody.style.transform = `rotate(${carAngle}deg)`;
+            }
+            map.panTo([carLatLng.lat, carLatLng.lng]);
+            updateDistanceDisplay();
         }, 16);
     }
 
     function findParking() {
-        // Just simulate finding logic
         document.getElementById('distance-display').innerHTML = "<span style='color:#4285f4'>Route Found!</span>";
-        // In a full app, you'd draw a line here
+        // Optionally, draw a line from car to parking
+        if (window.routeLine) map.removeLayer(window.routeLine);
+        window.routeLine = L.polyline([
+            [carLatLng.lat, carLatLng.lng],
+            [LOT_LOCATION.lat, LOT_LOCATION.lng]
+        ], { color: '#4285f4', weight: 4, dashArray: '8 8' }).addTo(map);
     }
 
-
-    // --- 4. REAL BACKEND INTEGRATION (The Sidebar) ---
+    // --- 8. SIDEBAR & LIVE FEED (unchanged) ---
     let pollingInterval = null;
     let cachedConfig = [];
-
     async function openSidebar(lotId) {
         document.getElementById('sidebar').classList.add('active');
-        
-        // A. Load Config Once
         try {
             const res = await fetch(`${API_BASE_URL}/api/config`);
             const config = await res.json();
             cachedConfig = config.slots;
-            
-            // Adjust internal image dimensions
-            const container = document.getElementById('live-grid-container');
-            // Logic to scale the slots to fit the sidebar container would go here
-            // For MVP, we assume the CSS 'width: 100%' handles the image scaling
-            // and we rely on relative positioning if possible. 
-            // NOTE: If slots don't align, we might need a scaling factor.
-            
             startLivePolling();
         } catch (e) {
             console.error("Backend Error", e);
@@ -272,57 +308,41 @@
             document.getElementById('sidebar-meta').style.color = "red";
         }
     }
-
     function closeSidebar() {
         document.getElementById('sidebar').classList.remove('active');
         if (pollingInterval) clearInterval(pollingInterval);
     }
-
     function startLivePolling() {
-        // Poll every 1 second
         pollingInterval = setInterval(async () => {
             try {
                 const res = await fetch(`${API_BASE_URL}/api/status`);
                 const data = await res.json();
                 renderLiveGrid(data.status_string);
-                
-                // Update text
                 const occupied = (data.status_string.match(/1|C|S|B/g) || []).length;
                 const free = data.status_string.length - occupied;
                 document.getElementById('sidebar-meta').innerHTML = `Live Feed • <span style="color:#0f9d58"><b>${free}</b> Slots Available</span>`;
-
             } catch (e) { console.warn("Poll failed"); }
         }, 1000);
     }
-
     function renderLiveGrid(statusString) {
         const layer = document.getElementById('live-slots-layer');
         layer.innerHTML = '';
-        
-        // Calculate Scale Factor (Because sidebar is smaller than original image)
-        // Original Config Width (e.g. 800) vs Actual Rendered Width (e.g. 400)
-        const originalW = 800; // Change this to match config.json width!
+        const originalW = 800;
         const containerW = document.getElementById('live-grid-container').offsetWidth;
         const scale = containerW / originalW;
-
         cachedConfig.forEach((slot, index) => {
             const state = statusString[index] || '0';
             const div = document.createElement('div');
             div.className = 'live-slot';
             if (state !== '0') div.classList.add('occupied');
-            
             const coords = slot.coordinates || slot;
-            
-            // Apply Scaling
             div.style.left = (coords.x * scale) + 'px';
             div.style.top = (coords.y * scale) + 'px';
             div.style.width = (coords.w * scale) + 'px';
             div.style.height = (coords.h * scale) + 'px';
-            
             layer.appendChild(div);
         });
     }
-
 </script>
 
 </body>
