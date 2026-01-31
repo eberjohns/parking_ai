@@ -19,8 +19,8 @@ app.add_middleware(
 )
 
 # --- CONFIGURATION ---
-# FRIEND_LAPTOP_URL = "http://localhost:5000/detections"
-FRIEND_LAPTOP_URL = "https://mugwumpian-scottie-homely.ngrok-free.dev/get_coords"
+FRIEND_LAPTOP_URL = "http://localhost:5000/detections"
+# FRIEND_LAPTOP_URL = "https://mugwumpian-scottie-homely.ngrok-free.dev/get_coords"
 MATRIX_FILE = "matrix.npy"
 SLOTS_CONFIG_FILE = "./config.json"
 # ---------------------
