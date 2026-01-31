@@ -159,8 +159,15 @@
 <script>
     // --- 1. CONFIGURATION ---
     const API_BASE_URL = "http://localhost:8000"; // Your Backend
-    // Example: St. Thomas College, Thrissur, Kerala, India
-    const LOT_LOCATION = { lat: 10.5222, lng: 76.2177 };
+    // Mock parking lots
+    const PARKING_LOTS = [
+        { id: 'lot_st_thomas', name: 'St. Thomas College', lat: 10.5222, lng: 76.2177 },
+        { id: 'lot_jubilee', name: 'Jubilee Park', lat: 10.5230, lng: 76.2185 },
+        { id: 'lot_city_mall', name: 'City Mall Parking', lat: 10.5210, lng: 76.2155 },
+        { id: 'lot_bus_stand', name: 'Bus Stand Lot', lat: 10.5205, lng: 76.2170 },
+        { id: 'lot_railway', name: 'Railway Parking', lat: 10.5240, lng: 76.2160 }
+    ];
+    const LOT_LOCATION = PARKING_LOTS[0];
     const CAR_START = { lat: 10.5215, lng: 76.2165 };
     let carMarker = null;
     let isAutoDriving = false;
@@ -188,13 +195,16 @@
             </div>
         `
     });
-    const parkingMarker = L.marker([LOT_LOCATION.lat, LOT_LOCATION.lng], {
-        icon: ParkingDivIcon,
-        title: 'St. Thomas College'
-    })
+    // Add all parking lot markers
+    PARKING_LOTS.forEach(lot => {
+        L.marker([lot.lat, lot.lng], {
+            icon: ParkingDivIcon,
+            title: lot.name
+        })
         .addTo(map)
-        .bindPopup('<b>St. Thomas College</b><br>Parking Lot')
-        .on('click', () => openSidebar('lot_st_thomas'));
+        .bindPopup(`<b>${lot.name}</b><br>Parking Lot`)
+        .on('click', () => openSidebar(lot.id));
+    });
 
     // --- 4. ADD CAR MARKER ---
     // Custom HTML marker for 3D car effect
@@ -203,7 +213,11 @@
         className: '',
         iconSize: [44, 70],
         iconAnchor: [22, 35],
-        html: `<div class=\"custom-car-marker\"><div class=\"custom-car-headlight\"></div></div>`
+            // html: `<div class="custom-car-marker" style="width:44px;height:70px;display:flex;align-items:center;justify-content:center;">
+            //     <img src="./car.png" alt="Car" style="width:38px;height:60px;object-fit:contain;display:block;" />
+            // </div>`
+            html: `<div class="custom-car-marker" style="width:44px;height:70px;display:flex;align-items:center;justify-content:center;">
+            </div>`
     });
     carMarker = L.marker([CAR_START.lat, CAR_START.lng], {
         icon: CarDivIcon,
@@ -223,7 +237,7 @@
     function moveCar() {
         let moved = false;
         let dLat = 0, dLng = 0;
-        const step = 0.000025; // ~2.5m per keypress, slower
+        const step = 0.000012; // ~1.2m per keypress, slower
         if (keys['ArrowUp'])    { dLat += step; moved = true; carAngle = 0; }
         if (keys['ArrowDown'])  { dLat -= step; moved = true; carAngle = 180; }
         if (keys['ArrowLeft'])  { dLng -= step; moved = true; carAngle = 270; }
@@ -283,13 +297,32 @@
     }
 
     function findParking() {
-        document.getElementById('distance-display').innerHTML = "<span style='color:#4285f4'>Route Found!</span>";
-        // Optionally, draw a line from car to parking
-        if (window.routeLine) map.removeLayer(window.routeLine);
-        window.routeLine = L.polyline([
-            [carLatLng.lat, carLatLng.lng],
-            [LOT_LOCATION.lat, LOT_LOCATION.lng]
-        ], { color: '#4285f4', weight: 4, dashArray: '8 8' }).addTo(map);
+        // Calculate distances to all lots
+        const lotsWithDistance = PARKING_LOTS.map(lot => ({
+            ...lot,
+            distance: map.distance([carLatLng.lat, carLatLng.lng], [lot.lat, lot.lng])
+        }));
+        lotsWithDistance.sort((a, b) => a.distance - b.distance);
+        // Show list in sidebar
+        let html = `<div style='padding:20px'><h3>Nearby Parking Lots</h3><ul style='list-style:none;padding:0;'>`;
+        lotsWithDistance.forEach(lot => {
+            html += `<li style='margin-bottom:12px;'><b>${lot.name}</b><br><span style='color:#4285f4'>${Math.round(lot.distance)}m away</span> <button onclick="window.selectLot('${lot.id}')" style='margin-left:10px;padding:4px 10px;border-radius:6px;border:none;background:#4285f4;color:#fff;cursor:pointer;'>Select</button></li>`;
+        });
+        html += `</ul></div>`;
+        document.getElementById('sidebar').classList.add('active');
+        document.getElementById('sidebar').innerHTML = html;
+        // Helper for selecting lot
+        window.selectLot = function(lotId) {
+            const lot = PARKING_LOTS.find(l => l.id === lotId);
+            if (!lot) return;
+            map.panTo([lot.lat, lot.lng]);
+            // Optionally, draw a line from car to selected lot
+            if (window.routeLine) map.removeLayer(window.routeLine);
+            window.routeLine = L.polyline([
+                [carLatLng.lat, carLatLng.lng],
+                [lot.lat, lot.lng]
+            ], { color: '#4285f4', weight: 4, dashArray: '8 8' }).addTo(map);
+        };
     }
 
     // --- 8. SIDEBAR & LIVE FEED (unchanged) ---
