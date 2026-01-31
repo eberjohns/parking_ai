@@ -5,21 +5,22 @@ import json
 import time
 from fastapi import FastAPI
 from threading import Thread
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware  # <--- IMPORT THIS
 
 app = FastAPI()
 
+# --- PASTE THIS BLOCK EXACTLY ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Allows ALL origins (Laptop 3, Phone, etc.)
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allows ALL methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows ALL headers (Content-Type, ngrok-skip, etc.)
 )
 
 # --- CONFIGURATION ---
-#https://mugwumpian-scottie-homely.ngrok-free.dev/get-coords
 FRIEND_LAPTOP_URL = "http://localhost:5000/detections"
+#FRIEND_LAPTOP_URL = "https://mugwumpian-scottie-homely.ngrok-free.dev/get_coords"
 MATRIX_FILE = "matrix.npy"
 SLOTS_CONFIG_FILE = "./config.json"
 # ---------------------
