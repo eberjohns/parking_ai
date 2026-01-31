@@ -72,18 +72,18 @@
         .btn-green { background: #0f9d58; }
         #sidebar {
             position: fixed;
-            top: 0;
+            top: 60px;
             right: 0;
             width: 400px;
-            height: 100vh;
+            max-height: 80vh;
             background: white;
             border-radius: 20px 0 0 20px;
             transform: translateX(110%);
             transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             z-index: 4000;
             box-shadow: -10px 0 40px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
+            display: block;
+            overflow-y: auto;
         }
         #sidebar.active {
             transform: translateX(0);
@@ -304,9 +304,22 @@
         }));
         lotsWithDistance.sort((a, b) => a.distance - b.distance);
         // Show list in sidebar
-        let html = `<div style='padding:20px'><h3>Nearby Parking Lots</h3><ul style='list-style:none;padding:0;'>`;
+        let html = `
+        <div style='padding:0;'>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 20px 10px 20px;border-bottom:1px solid #eee;">
+                <h3 style="margin:0;font-size:22px;color:#333;">Nearby Parking Lots</h3>
+                <button onclick="window.closeSidebarPanel()" style="background:#f1f3f4;border:none;width:36px;height:36px;border-radius:50%;font-size:22px;cursor:pointer;">×</button>
+            </div>
+            <ul style='list-style:none;padding:20px;'>`;
         lotsWithDistance.forEach(lot => {
-            html += `<li style='margin-bottom:12px;'><b>${lot.name}</b><br><span style='color:#4285f4'>${Math.round(lot.distance)}m away</span> <button onclick="window.selectLot('${lot.id}')" style='margin-left:10px;padding:4px 10px;border-radius:6px;border:none;background:#4285f4;color:#fff;cursor:pointer;'>Select</button></li>`;
+            html += `
+                <li style='margin-bottom:18px;padding:16px 18px;background:#f8f9fa;border-radius:10px;box-shadow:0 2px 8px rgba(66,133,244,0.07);display:flex;justify-content:space-between;align-items:center;'>
+                    <div>
+                        <b style="font-size:17px;color:#222;">${lot.name}</b><br>
+                        <span style='color:#4285f4;font-size:15px;'>${Math.round(lot.distance)}m away</span>
+                    </div>
+                    <button onclick="window.selectLot('${lot.id}')" style='padding:7px 18px;border-radius:8px;border:none;background:#4285f4;color:#fff;cursor:pointer;font-size:15px;font-weight:500;box-shadow:0 2px 8px rgba(66,133,244,0.12);'>Select</button>
+                </li>`;
         });
         html += `</ul></div>`;
         document.getElementById('sidebar').classList.add('active');
@@ -316,12 +329,14 @@
             const lot = PARKING_LOTS.find(l => l.id === lotId);
             if (!lot) return;
             map.panTo([lot.lat, lot.lng]);
-            // Optionally, draw a line from car to selected lot
             if (window.routeLine) map.removeLayer(window.routeLine);
             window.routeLine = L.polyline([
                 [carLatLng.lat, carLatLng.lng],
                 [lot.lat, lot.lng]
             ], { color: '#4285f4', weight: 4, dashArray: '8 8' }).addTo(map);
+        };
+        window.closeSidebarPanel = function() {
+            document.getElementById('sidebar').classList.remove('active');
         };
     }
 
@@ -329,7 +344,31 @@
     let pollingInterval = null;
     let cachedConfig = [];
     async function openSidebar(lotId) {
+        // Restore the original parking lot info panel
+        let lot = PARKING_LOTS.find(l => l.id === lotId) || PARKING_LOTS[0];
+        let html = `
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <h2 id="sidebar-name">${lot.name}</h2>
+                    <p id="sidebar-meta">Live Occupancy Feed • <span style="color:#0f9d58">Connecting...</span></p>
+                </div>
+                <button class="close-btn" onclick="window.closeSidebarPanel()">×</button>
+            </div>
+            <div class="sidebar-details" style="padding: 0 20px 20px 20px; color: #444; font-size: 15px;">
+                <b>Details:</b>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque. Proin ac neque nec nisi blandit commodo.</p>
+            </div>
+            <div id="live-grid-container">
+                <img id="live-map-img" src="st_thomas_top_down.png" alt="Live View">
+                <div id="live-slots-layer"></div>
+            </div>
+        `;
         document.getElementById('sidebar').classList.add('active');
+        document.getElementById('sidebar').innerHTML = html;
+        window.closeSidebarPanel = function() {
+            document.getElementById('sidebar').classList.remove('active');
+        };
+        // Optionally, fetch and show live data as before
         try {
             const res = await fetch(`${API_BASE_URL}/api/config`);
             const config = await res.json();
