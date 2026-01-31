@@ -1,0 +1,825 @@
+{
+    "lot_id": "st_thomas_main",
+    "lot_name": "St. Thomas College Main Ground",
+    "map_image_url": "assets/st_thomas_top_down.png",
+    "image_dimensions": {
+        "width": 1152,
+        "height": 896
+    },
+    "slots": [
+        {
+            "id": 0,
+            "label": "Slot_0",
+            "type": "car",
+            "coordinates": {
+                "x": 8,
+                "y": 129,
+                "w": 47,
+                "h": 69
+            }
+        },
+        {
+            "id": 1,
+            "label": "Slot_1",
+            "type": "car",
+            "coordinates": {
+                "x": 73,
+                "y": 128,
+                "w": 39,
+                "h": 68
+            }
+        },
+        {
+            "id": 2,
+            "label": "Slot_2",
+            "type": "car",
+            "coordinates": {
+                "x": 125,
+                "y": 132,
+                "w": 50,
+                "h": 70
+            }
+        },
+        {
+            "id": 3,
+            "label": "Slot_3",
+            "type": "car",
+            "coordinates": {
+                "x": 191,
+                "y": 115,
+                "w": 44,
+                "h": 80
+            }
+        },
+        {
+            "id": 4,
+            "label": "Slot_4",
+            "type": "car",
+            "coordinates": {
+                "x": 239,
+                "y": 115,
+                "w": 43,
+                "h": 79
+            }
+        },
+        {
+            "id": 5,
+            "label": "Slot_5",
+            "type": "car",
+            "coordinates": {
+                "x": 363,
+                "y": 113,
+                "w": 55,
+                "h": 74
+            }
+        },
+        {
+            "id": 6,
+            "label": "Slot_6",
+            "type": "car",
+            "coordinates": {
+                "x": 422,
+                "y": 113,
+                "w": 55,
+                "h": 71
+            }
+        },
+        {
+            "id": 7,
+            "label": "Slot_7",
+            "type": "car",
+            "coordinates": {
+                "x": 482,
+                "y": 113,
+                "w": 61,
+                "h": 75
+            }
+        },
+        {
+            "id": 8,
+            "label": "Slot_8",
+            "type": "car",
+            "coordinates": {
+                "x": 546,
+                "y": 113,
+                "w": 55,
+                "h": 73
+            }
+        },
+        {
+            "id": 9,
+            "label": "Slot_9",
+            "type": "car",
+            "coordinates": {
+                "x": 607,
+                "y": 114,
+                "w": 54,
+                "h": 73
+            }
+        },
+        {
+            "id": 10,
+            "label": "Slot_10",
+            "type": "car",
+            "coordinates": {
+                "x": 663,
+                "y": 112,
+                "w": 55,
+                "h": 73
+            }
+        },
+        {
+            "id": 11,
+            "label": "Slot_11",
+            "type": "car",
+            "coordinates": {
+                "x": 722,
+                "y": 112,
+                "w": 46,
+                "h": 67
+            }
+        },
+        {
+            "id": 12,
+            "label": "Slot_12",
+            "type": "car",
+            "coordinates": {
+                "x": 770,
+                "y": 112,
+                "w": 54,
+                "h": 74
+            }
+        },
+        {
+            "id": 13,
+            "label": "Slot_13",
+            "type": "car",
+            "coordinates": {
+                "x": 828,
+                "y": 114,
+                "w": 50,
+                "h": 65
+            }
+        },
+        {
+            "id": 14,
+            "label": "Slot_14",
+            "type": "car",
+            "coordinates": {
+                "x": 970,
+                "y": 230,
+                "w": 55,
+                "h": 84
+            }
+        },
+        {
+            "id": 15,
+            "label": "Slot_15",
+            "type": "car",
+            "coordinates": {
+                "x": 910,
+                "y": 232,
+                "w": 62,
+                "h": 84
+            }
+        },
+        {
+            "id": 16,
+            "label": "Slot_16",
+            "type": "car",
+            "coordinates": {
+                "x": 854,
+                "y": 234,
+                "w": 62,
+                "h": 82
+            }
+        },
+        {
+            "id": 17,
+            "label": "Slot_17",
+            "type": "car",
+            "coordinates": {
+                "x": 797,
+                "y": 232,
+                "w": 57,
+                "h": 82
+            }
+        },
+        {
+            "id": 18,
+            "label": "Slot_18",
+            "type": "car",
+            "coordinates": {
+                "x": 730,
+                "y": 233,
+                "w": 67,
+                "h": 82
+            }
+        },
+        {
+            "id": 19,
+            "label": "Slot_19",
+            "type": "car",
+            "coordinates": {
+                "x": 670,
+                "y": 229,
+                "w": 57,
+                "h": 88
+            }
+        },
+        {
+            "id": 20,
+            "label": "Slot_20",
+            "type": "car",
+            "coordinates": {
+                "x": 608,
+                "y": 230,
+                "w": 59,
+                "h": 86
+            }
+        },
+        {
+            "id": 21,
+            "label": "Slot_21",
+            "type": "car",
+            "coordinates": {
+                "x": 546,
+                "y": 232,
+                "w": 58,
+                "h": 87
+            }
+        },
+        {
+            "id": 22,
+            "label": "Slot_22",
+            "type": "car",
+            "coordinates": {
+                "x": 485,
+                "y": 233,
+                "w": 57,
+                "h": 84
+            }
+        },
+        {
+            "id": 23,
+            "label": "Slot_23",
+            "type": "car",
+            "coordinates": {
+                "x": 422,
+                "y": 239,
+                "w": 56,
+                "h": 83
+            }
+        },
+        {
+            "id": 24,
+            "label": "Slot_24",
+            "type": "car",
+            "coordinates": {
+                "x": 361,
+                "y": 236,
+                "w": 57,
+                "h": 88
+            }
+        },
+        {
+            "id": 25,
+            "label": "Slot_25",
+            "type": "car",
+            "coordinates": {
+                "x": 300,
+                "y": 235,
+                "w": 56,
+                "h": 97
+            }
+        },
+        {
+            "id": 26,
+            "label": "Slot_26",
+            "type": "car",
+            "coordinates": {
+                "x": 237,
+                "y": 237,
+                "w": 59,
+                "h": 93
+            }
+        },
+        {
+            "id": 27,
+            "label": "Slot_27",
+            "type": "car",
+            "coordinates": {
+                "x": 176,
+                "y": 238,
+                "w": 53,
+                "h": 94
+            }
+        },
+        {
+            "id": 28,
+            "label": "Slot_28",
+            "type": "car",
+            "coordinates": {
+                "x": 117,
+                "y": 241,
+                "w": 55,
+                "h": 94
+            }
+        },
+        {
+            "id": 29,
+            "label": "Slot_29",
+            "type": "car",
+            "coordinates": {
+                "x": 56,
+                "y": 242,
+                "w": 54,
+                "h": 90
+            }
+        },
+        {
+            "id": 30,
+            "label": "Slot_30",
+            "type": "car",
+            "coordinates": {
+                "x": 1,
+                "y": 243,
+                "w": 47,
+                "h": 88
+            }
+        },
+        {
+            "id": 31,
+            "label": "Slot_31",
+            "type": "car",
+            "coordinates": {
+                "x": 1,
+                "y": 434,
+                "w": 43,
+                "h": 92
+            }
+        },
+        {
+            "id": 32,
+            "label": "Slot_32",
+            "type": "car",
+            "coordinates": {
+                "x": 46,
+                "y": 436,
+                "w": 60,
+                "h": 89
+            }
+        },
+        {
+            "id": 33,
+            "label": "Slot_33",
+            "type": "car",
+            "coordinates": {
+                "x": 109,
+                "y": 436,
+                "w": 54,
+                "h": 89
+            }
+        },
+        {
+            "id": 34,
+            "label": "Slot_34",
+            "type": "car",
+            "coordinates": {
+                "x": 167,
+                "y": 437,
+                "w": 64,
+                "h": 86
+            }
+        },
+        {
+            "id": 35,
+            "label": "Slot_35",
+            "type": "car",
+            "coordinates": {
+                "x": 234,
+                "y": 435,
+                "w": 60,
+                "h": 90
+            }
+        },
+        {
+            "id": 36,
+            "label": "Slot_36",
+            "type": "car",
+            "coordinates": {
+                "x": 296,
+                "y": 434,
+                "w": 61,
+                "h": 88
+            }
+        },
+        {
+            "id": 37,
+            "label": "Slot_37",
+            "type": "car",
+            "coordinates": {
+                "x": 360,
+                "y": 433,
+                "w": 64,
+                "h": 92
+            }
+        },
+        {
+            "id": 38,
+            "label": "Slot_38",
+            "type": "car",
+            "coordinates": {
+                "x": 426,
+                "y": 434,
+                "w": 62,
+                "h": 88
+            }
+        },
+        {
+            "id": 39,
+            "label": "Slot_39",
+            "type": "car",
+            "coordinates": {
+                "x": 488,
+                "y": 432,
+                "w": 61,
+                "h": 88
+            }
+        },
+        {
+            "id": 40,
+            "label": "Slot_40",
+            "type": "car",
+            "coordinates": {
+                "x": 552,
+                "y": 432,
+                "w": 63,
+                "h": 87
+            }
+        },
+        {
+            "id": 41,
+            "label": "Slot_41",
+            "type": "car",
+            "coordinates": {
+                "x": 616,
+                "y": 434,
+                "w": 69,
+                "h": 86
+            }
+        },
+        {
+            "id": 42,
+            "label": "Slot_42",
+            "type": "car",
+            "coordinates": {
+                "x": 684,
+                "y": 421,
+                "w": 71,
+                "h": 98
+            }
+        },
+        {
+            "id": 43,
+            "label": "Slot_43",
+            "type": "car",
+            "coordinates": {
+                "x": 757,
+                "y": 417,
+                "w": 60,
+                "h": 100
+            }
+        },
+        {
+            "id": 44,
+            "label": "Slot_44",
+            "type": "car",
+            "coordinates": {
+                "x": 951,
+                "y": 410,
+                "w": 49,
+                "h": 109
+            }
+        },
+        {
+            "id": 45,
+            "label": "Slot_45",
+            "type": "car",
+            "coordinates": {
+                "x": 1003,
+                "y": 408,
+                "w": 67,
+                "h": 111
+            }
+        },
+        {
+            "id": 46,
+            "label": "Slot_46",
+            "type": "car",
+            "coordinates": {
+                "x": 956,
+                "y": 735,
+                "w": 69,
+                "h": 129
+            }
+        },
+        {
+            "id": 47,
+            "label": "Slot_47",
+            "type": "car",
+            "coordinates": {
+                "x": 876,
+                "y": 733,
+                "w": 79,
+                "h": 129
+            }
+        },
+        {
+            "id": 48,
+            "label": "Slot_48",
+            "type": "car",
+            "coordinates": {
+                "x": 816,
+                "y": 739,
+                "w": 60,
+                "h": 120
+            }
+        },
+        {
+            "id": 49,
+            "label": "Slot_49",
+            "type": "car",
+            "coordinates": {
+                "x": 746,
+                "y": 736,
+                "w": 69,
+                "h": 129
+            }
+        },
+        {
+            "id": 50,
+            "label": "Slot_50",
+            "type": "car",
+            "coordinates": {
+                "x": 683,
+                "y": 732,
+                "w": 61,
+                "h": 133
+            }
+        },
+        {
+            "id": 51,
+            "label": "Slot_51",
+            "type": "car",
+            "coordinates": {
+                "x": 569,
+                "y": 741,
+                "w": 76,
+                "h": 127
+            }
+        },
+        {
+            "id": 52,
+            "label": "Slot_52",
+            "type": "car",
+            "coordinates": {
+                "x": 504,
+                "y": 737,
+                "w": 65,
+                "h": 129
+            }
+        },
+        {
+            "id": 53,
+            "label": "Slot_53",
+            "type": "car",
+            "coordinates": {
+                "x": 431,
+                "y": 738,
+                "w": 71,
+                "h": 127
+            }
+        },
+        {
+            "id": 54,
+            "label": "Slot_54",
+            "type": "car",
+            "coordinates": {
+                "x": 372,
+                "y": 744,
+                "w": 59,
+                "h": 118
+            }
+        },
+        {
+            "id": 55,
+            "label": "Slot_55",
+            "type": "car",
+            "coordinates": {
+                "x": 305,
+                "y": 741,
+                "w": 65,
+                "h": 126
+            }
+        },
+        {
+            "id": 56,
+            "label": "Slot_56",
+            "type": "car",
+            "coordinates": {
+                "x": 237,
+                "y": 747,
+                "w": 62,
+                "h": 120
+            }
+        },
+        {
+            "id": 57,
+            "label": "Slot_57",
+            "type": "car",
+            "coordinates": {
+                "x": 169,
+                "y": 755,
+                "w": 63,
+                "h": 115
+            }
+        },
+        {
+            "id": 58,
+            "label": "Slot_58",
+            "type": "car",
+            "coordinates": {
+                "x": 97,
+                "y": 767,
+                "w": 67,
+                "h": 94
+            }
+        },
+        {
+            "id": 59,
+            "label": "Slot_59",
+            "type": "car",
+            "coordinates": {
+                "x": 42,
+                "y": 760,
+                "w": 54,
+                "h": 97
+            }
+        },
+        {
+            "id": 60,
+            "label": "Slot_60",
+            "type": "car",
+            "coordinates": {
+                "x": 5,
+                "y": 753,
+                "w": 29,
+                "h": 105
+            }
+        },
+        {
+            "id": 61,
+            "label": "Slot_61",
+            "type": "car",
+            "coordinates": {
+                "x": 1,
+                "y": 533,
+                "w": 38,
+                "h": 99
+            }
+        },
+        {
+            "id": 62,
+            "label": "Slot_62",
+            "type": "car",
+            "coordinates": {
+                "x": 45,
+                "y": 530,
+                "w": 59,
+                "h": 103
+            }
+        },
+        {
+            "id": 63,
+            "label": "Slot_63",
+            "type": "car",
+            "coordinates": {
+                "x": 107,
+                "y": 529,
+                "w": 61,
+                "h": 105
+            }
+        },
+        {
+            "id": 64,
+            "label": "Slot_64",
+            "type": "car",
+            "coordinates": {
+                "x": 172,
+                "y": 529,
+                "w": 59,
+                "h": 109
+            }
+        },
+        {
+            "id": 65,
+            "label": "Slot_65",
+            "type": "car",
+            "coordinates": {
+                "x": 234,
+                "y": 529,
+                "w": 62,
+                "h": 108
+            }
+        },
+        {
+            "id": 66,
+            "label": "Slot_66",
+            "type": "car",
+            "coordinates": {
+                "x": 298,
+                "y": 524,
+                "w": 64,
+                "h": 111
+            }
+        },
+        {
+            "id": 67,
+            "label": "Slot_67",
+            "type": "car",
+            "coordinates": {
+                "x": 365,
+                "y": 527,
+                "w": 60,
+                "h": 107
+            }
+        },
+        {
+            "id": 68,
+            "label": "Slot_68",
+            "type": "car",
+            "coordinates": {
+                "x": 428,
+                "y": 524,
+                "w": 64,
+                "h": 109
+            }
+        },
+        {
+            "id": 69,
+            "label": "Slot_69",
+            "type": "car",
+            "coordinates": {
+                "x": 493,
+                "y": 527,
+                "w": 63,
+                "h": 107
+            }
+        },
+        {
+            "id": 70,
+            "label": "Slot_70",
+            "type": "car",
+            "coordinates": {
+                "x": 558,
+                "y": 523,
+                "w": 70,
+                "h": 106
+            }
+        },
+        {
+            "id": 71,
+            "label": "Slot_71",
+            "type": "car",
+            "coordinates": {
+                "x": 629,
+                "y": 522,
+                "w": 71,
+                "h": 104
+            }
+        },
+        {
+            "id": 72,
+            "label": "Slot_72",
+            "type": "car",
+            "coordinates": {
+                "x": 702,
+                "y": 522,
+                "w": 61,
+                "h": 105
+            }
+        },
+        {
+            "id": 73,
+            "label": "Slot_73",
+            "type": "car",
+            "coordinates": {
+                "x": 764,
+                "y": 522,
+                "w": 69,
+                "h": 104
+            }
+        }
+    ]
+}
